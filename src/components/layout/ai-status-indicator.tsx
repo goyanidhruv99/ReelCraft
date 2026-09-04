@@ -1,33 +1,43 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { AiHealthStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
 export function AiStatusIndicator({ className }: { className?: string }) {
   const [health, setHealth] = useState<AiHealthStatus | null>(null);
+  const mounted = useRef(true);
 
   const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/ai/health", { cache: "no-store" });
       const data = (await res.json()) as AiHealthStatus;
-      setHealth(data);
+      if (mounted.current) setHealth(data);
     } catch {
-      setHealth({
-        available: false,
-        ollama: false,
-        model: "qwen3:8b",
-        modelInstalled: false,
-        code: "ollama_not_running",
-        message: "Local AI is not running. Start Ollama and try again.",
-      });
+      if (mounted.current) {
+        setHealth({
+          available: false,
+          ollama: false,
+          model: "qwen3:8b",
+          modelInstalled: false,
+          code: "ollama_not_running",
+          message: "Local AI is not running. Start Ollama and try again.",
+        });
+      }
     }
   }, []);
 
   useEffect(() => {
-    void refresh();
-    const id = window.setInterval(() => void refresh(), 20_000);
-    return () => window.clearInterval(id);
+    mounted.current = true;
+    const id = window.setTimeout(() => {
+      void refresh();
+    }, 0);
+    const interval = window.setInterval(() => void refresh(), 20_000);
+    return () => {
+      mounted.current = false;
+      window.clearTimeout(id);
+      window.clearInterval(interval);
+    };
   }, [refresh]);
 
   const ready = health?.available === true;
