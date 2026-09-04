@@ -7,12 +7,11 @@ import { VideoCard } from "@/components/video/video-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { useClientSnapshot } from "@/hooks/use-client-snapshot";
-import { deleteVideo, listVideos } from "@/services/storage/local-store";
-import type { VideoDraft } from "@/types";
+import { deleteVideo, getEmptyVideos, listVideos } from "@/services/storage/local-store";
 
 export function VideosView() {
   const router = useRouter();
-  const videos = useClientSnapshot(listVideos, () => [] as VideoDraft[]);
+  const videos = useClientSnapshot(listVideos, getEmptyVideos);
 
   return (
     <div className="space-y-6">

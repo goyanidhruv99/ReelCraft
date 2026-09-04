@@ -21,12 +21,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { TEMPLATES } from "@/data/catalog";
 import { useClientSnapshot } from "@/hooks/use-client-snapshot";
 import { getAiServices } from "@/services/ai";
-import { listVideos } from "@/services/storage/local-store";
-import type { VideoDraft } from "@/types";
+import { getEmptyVideos, listVideos } from "@/services/storage/local-store";
 
 export function DashboardView() {
   const router = useRouter();
-  const videos = useClientSnapshot(listVideos, () => [] as VideoDraft[]);
+  const videos = useClientSnapshot(listVideos, getEmptyVideos);
   const ai = useMemo(() => getAiServices(), []);
   const pending = videos.filter((v) =>
     ["script_pending", "scenes_pending", "rendering"].includes(v.status)

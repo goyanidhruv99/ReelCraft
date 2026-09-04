@@ -19,17 +19,29 @@ import {
   type ScriptGenerator,
 } from "./types";
 
-function isScene(value: unknown): value is ScriptScene {
-  if (!value || typeof value !== "object") return false;
+function normalizeScene(value: unknown, index: number): ScriptScene | null {
+  if (!value || typeof value !== "object") return null;
   const s = value as Record<string, unknown>;
-  return (
-    typeof s.sceneNumber === "number" &&
-    typeof s.durationSeconds === "number" &&
-    typeof s.narration === "string" &&
-    typeof s.visualDescription === "string" &&
-    typeof s.emotion === "string" &&
-    typeof s.transition === "string"
-  );
+  const narration = String(
+    s.narration ?? s.dialogue ?? s.voiceover ?? ""
+  ).trim();
+  const visualDescription = String(
+    s.visualDescription ?? s.visual ?? s.description ?? s.imagePrompt ?? ""
+  ).trim();
+  if (!narration || !visualDescription) return null;
+
+  return {
+    sceneNumber:
+      typeof s.sceneNumber === "number" ? s.sceneNumber : index + 1,
+    durationSeconds: Math.max(
+      1,
+      Number(s.durationSeconds ?? s.duration ?? 8) || 8
+    ),
+    narration,
+    visualDescription,
+    emotion: String(s.emotion || "neutral").trim(),
+    transition: String(s.transition || "cut").trim(),
+  };
 }
 
 export function parseGeneratedScript(
@@ -45,15 +57,9 @@ export function parseGeneratedScript(
 
   const data = raw as Record<string, unknown>;
   const scenesRaw = Array.isArray(data.scenes) ? data.scenes : [];
-  const scenes = scenesRaw.filter(isScene).map((scene, index) => ({
-    sceneNumber:
-      typeof scene.sceneNumber === "number" ? scene.sceneNumber : index + 1,
-    durationSeconds: Math.max(1, Number(scene.durationSeconds) || 8),
-    narration: String(scene.narration || "").trim(),
-    visualDescription: String(scene.visualDescription || "").trim(),
-    emotion: String(scene.emotion || "neutral").trim(),
-    transition: String(scene.transition || "cut").trim(),
-  }));
+  const scenes = scenesRaw
+    .map((scene, index) => normalizeScene(scene, index))
+    .filter((scene): scene is ScriptScene => scene !== null);
 
   if (scenes.length === 0) {
     throw new OllamaError(

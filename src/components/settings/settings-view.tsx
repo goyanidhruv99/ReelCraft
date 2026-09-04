@@ -27,8 +27,10 @@ import {
 import type { AppSettings, AspectRatio, VideoStyle } from "@/types";
 import { UnavailableNotice } from "@/components/ui/unavailable-notice";
 
+const serverSettings = defaultAppSettings;
+
 export function SettingsView() {
-  const stored = useClientSnapshot(getAppSettings, () => defaultAppSettings);
+  const stored = useClientSnapshot(getAppSettings, () => serverSettings);
   const [draft, setDraft] = useState<AppSettings | null>(null);
   const form = draft ?? stored;
   const [saved, setSaved] = useState(false);

@@ -21,8 +21,10 @@ import {
 } from "@/services/storage/local-store";
 import type { BrandingSettings } from "@/types";
 
+const serverBranding = defaultBranding;
+
 export function BrandingView() {
-  const stored = useClientSnapshot(getBranding, () => defaultBranding);
+  const stored = useClientSnapshot(getBranding, () => serverBranding);
   const [draft, setDraft] = useState<BrandingSettings | null>(null);
   const form = draft ?? stored;
   const [saved, setSaved] = useState(false);

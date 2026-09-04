@@ -38,8 +38,10 @@ Hard rules:
 - Never use copyrighted characters, movie plots, brand IP, or existing famous storylines.
 - Narration must sound natural when spoken aloud: short sentences, strong rhythm.
 - Do NOT put camera directions, subtitle text, or on-screen text inside narration.
-- visualDescription must be in English, detailed, cinematic, vertical (9:16) composition, useful for image generation.
+- visualDescription must ALWAYS be written in English, even when narration is Hindi/Gujarati/Hinglish. This is mandatory for future image models.
+- visualDescription must be detailed, cinematic, vertical (9:16) composition, useful for image generation.
 - visualDescription must NOT include written text, logos, watermarks, or subtitles in the image.
+- Never put Hindi/Gujarati/Hinglish text inside visualDescription.
 - First scene must deliver a strong hook in the first 2-3 seconds of spoken content.
 - Story structure: hook → setup → conflict/problem → progression → emotional or surprising ending.
 - Keep scenes focused. One clear visual beat per scene.`;
@@ -64,6 +66,7 @@ Target duration: ~${input.durationSeconds} seconds
 Target spoken length: about ${words} words total across all narration.
 Scene count: ${min}-${max} scenes.
 Each scene needs: sceneNumber, durationSeconds, narration, visualDescription, emotion, transition.
+CRITICAL: narration uses the selected language. visualDescription MUST be English only (detailed cinematic image prompt).
 Scene durations must add up to approximately ${input.durationSeconds} seconds.
 
 Return JSON with exactly this shape:

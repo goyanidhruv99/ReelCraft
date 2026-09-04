@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { UnavailableNotice } from "@/components/ui/unavailable-notice";
 import { useClientSnapshot } from "@/hooks/use-client-snapshot";
 import {
+  getEmptyVideo,
   getVideo,
   updateGeneratedScript,
 } from "@/services/storage/local-store";
@@ -44,7 +45,7 @@ function emptyScriptFromIdea(
 export function ScriptWorkspace({ videoId }: { videoId: string }) {
   const video = useClientSnapshot(
     () => getVideo(videoId),
-    () => null
+    getEmptyVideo
   );
 
   const storedScript = video?.generatedScript ?? null;

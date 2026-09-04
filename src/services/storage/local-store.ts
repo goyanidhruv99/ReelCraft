@@ -18,6 +18,15 @@ const SELECTED_MUSIC_KEY = "reelcraft.selectedMusic";
 
 const jsonCache = new Map<string, { raw: string | null; value: unknown }>();
 const EMPTY_VIDEOS: VideoDraft[] = [];
+const EMPTY_VIDEO: VideoDraft | null = null;
+
+export function getEmptyVideos(): VideoDraft[] {
+  return EMPTY_VIDEOS;
+}
+
+export function getEmptyVideo(): VideoDraft | null {
+  return EMPTY_VIDEO;
+}
 
 function canUseStorage(): boolean {
   return typeof window !== "undefined" && typeof localStorage !== "undefined";

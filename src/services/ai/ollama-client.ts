@@ -197,9 +197,12 @@ export async function ollamaChat(
         messages,
         stream: false,
         format: options?.format === "json" ? "json" : undefined,
+        // Qwen3 thinking mode is too slow for Shorts scripts on 16GB M2.
+        think: false,
         options: {
           temperature: options?.temperature ?? 0.7,
-          num_ctx: 8192,
+          num_ctx: 4096,
+          num_predict: 2500,
         },
       }),
     },

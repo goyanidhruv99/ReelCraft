@@ -11,8 +11,10 @@ import {
 } from "@/services/storage/local-store";
 import { cn } from "@/lib/utils";
 
+const serverSettings = defaultAppSettings;
+
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const settings = useClientSnapshot(getAppSettings, () => defaultAppSettings);
+  const settings = useClientSnapshot(getAppSettings, () => serverSettings);
   const [collapsedOverride, setCollapsedOverride] = useState<boolean | null>(
     null
   );

@@ -4,8 +4,8 @@ import { useCallback, useSyncExternalStore } from "react";
 import { subscribeLocalStore } from "@/lib/local-store-events";
 
 /**
- * Subscribe to a client-only snapshot (e.g. localStorage) without
- * setState-in-effect hydration patterns.
+ * Subscribe to a client-only snapshot (e.g. localStorage).
+ * Pass a referentially stable getServerSnapshot (module-level constant).
  */
 export function useClientSnapshot<T>(
   getSnapshot: () => T,
