@@ -20,8 +20,10 @@ import { useClientSnapshot } from "@/hooks/use-client-snapshot";
 import {
   getEmptyVideo,
   getVideo,
+  markScenesReady,
   updateGeneratedScript,
 } from "@/services/storage/local-store";
+import { useRouter } from "next/navigation";
 import { STATUS_LABELS } from "@/data/catalog";
 import type { GeneratedVideoScript, ScriptScene } from "@/types";
 
@@ -43,6 +45,7 @@ function emptyScriptFromIdea(
 }
 
 export function ScriptWorkspace({ videoId }: { videoId: string }) {
+  const router = useRouter();
   const video = useClientSnapshot(
     () => getVideo(videoId),
     getEmptyVideo
@@ -147,9 +150,13 @@ export function ScriptWorkspace({ videoId }: { videoId: string }) {
   };
 
   const handleContinue = () => {
-    setMessage(
-      "Scene image generation is not available in Phase 2. Your script is ready — images, voice, and render come next."
-    );
+    if (!video || !script || script.scenes.length === 0) {
+      setMessage("Generate a script with scenes before continuing.");
+      return;
+    }
+    updateGeneratedScript(video.id, script);
+    markScenesReady(video.id);
+    router.push(`/create/scenes?id=${video.id}`);
   };
 
   if (!video || !script) {

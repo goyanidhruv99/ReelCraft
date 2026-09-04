@@ -63,12 +63,19 @@ model Video {
 }
 
 model Scene {
-  id          String  @id @default(cuid())
-  order       Int
-  narration   String
-  visualPrompt String?
-  imagePath   String?
-  durationSec Int     @default(5)
+  id               String  @id @default(cuid())
+  order            Int
+  narration        String
+  visualPrompt     String?
+  imagePath        String?
+  imagePrompt      String?
+  negativePrompt   String?
+  seed             Int?
+  imageStatus      String  @default("pending")
+  imageWidth       Int?
+  imageHeight      Int?
+  generationTimeMs Int?
+  durationSec      Int     @default(5)
 
   videoId String
   video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)

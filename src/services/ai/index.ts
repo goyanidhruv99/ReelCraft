@@ -35,6 +35,20 @@ export type {
 export { AiUnavailableError } from "./types";
 export { generateStructuredScript, parseGeneratedScript } from "./script-generator";
 export { getAiHealth, getOllamaConfig, OllamaError } from "./ollama-client";
+export {
+  createImageGenerator,
+  generateLocalImage,
+  getImageServiceHealth,
+  getImageServiceConfig,
+  ImageServiceError,
+} from "./image-generator";
+export {
+  buildSceneImagePrompt,
+  buildDefaultSceneImageFields,
+  extractCharacterProfile,
+  DEFAULT_NEGATIVE_PROMPT,
+} from "./image-prompt-builder";
+
 
 export interface AiServices {
   script: ScriptGenerator;

@@ -116,3 +116,12 @@ export type {
   ScriptGenerateRequest,
   ScriptScene,
 } from "./script";
+
+export type {
+  CharacterProfile,
+  ImageGenerateRequest,
+  ImageGenerateResponse,
+  ImageHealthStatus,
+  SceneImageMeta,
+  SceneImageStatus,
+} from "./image";

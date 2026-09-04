@@ -65,6 +65,8 @@ export interface ImageGenerationInput {
   aspectRatio: string;
   width?: number;
   height?: number;
+  negativePrompt?: string;
+  seed?: number;
 }
 
 export interface ImageGenerationResult {

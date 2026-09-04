@@ -1,6 +1,8 @@
 /**
- * Structured video script produced by the local LLM (Phase 2).
+ * Structured video script produced by the local LLM (Phase 2+).
  */
+
+import type { CharacterProfile, SceneImageMeta } from "./image";
 
 export interface ScriptScene {
   sceneNumber: number;
@@ -9,6 +11,11 @@ export interface ScriptScene {
   visualDescription: string;
   emotion: string;
   transition: string;
+  /** Stable id for image generation / storage */
+  id?: string;
+  imagePrompt?: string | null;
+  negativePrompt?: string | null;
+  image?: SceneImageMeta | null;
 }
 
 export interface GeneratedVideoScript {
@@ -19,6 +26,7 @@ export interface GeneratedVideoScript {
   style: string;
   durationSeconds: number;
   scenes: ScriptScene[];
+  characterProfile?: CharacterProfile | null;
 }
 
 export interface ScriptGenerateRequest {

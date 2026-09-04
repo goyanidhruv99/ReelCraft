@@ -7,8 +7,13 @@ import type {
   VideoDraftSettings,
   VideoStyle,
   AspectRatio,
+  GeneratedVideoScript,
 } from "@/types";
 import { emitLocalStoreChange } from "@/lib/local-store-events";
+import {
+  buildDefaultSceneImageFields,
+  extractCharacterProfile,
+} from "@/services/ai/image-prompt-builder";
 
 const VIDEOS_KEY = "reelcraft.videos";
 const BRANDING_KEY = "reelcraft.branding";
@@ -193,11 +198,12 @@ export function saveGeneratedScript(
 ): VideoDraft | null {
   const existing = getVideo(id);
   if (!existing) return null;
-  const narration = generatedScript.scenes.map((s) => s.narration).join("\n\n");
+  const prepared = prepareScriptForScenes(id, generatedScript, existing.settings.videoStyle);
+  const narration = prepared.scenes.map((s) => s.narration).join("\n\n");
   const updated: VideoDraft = {
     ...existing,
-    title: generatedScript.title || existing.title,
-    generatedScript,
+    title: prepared.title || existing.title,
+    generatedScript: prepared,
     script: narration,
     status: "script_ready",
     updatedAt: new Date().toISOString(),
@@ -210,6 +216,62 @@ export function updateGeneratedScript(
   generatedScript: import("@/types").GeneratedVideoScript
 ): VideoDraft | null {
   return saveGeneratedScript(id, generatedScript);
+}
+
+export function prepareScriptForScenes(
+  projectId: string,
+  script: GeneratedVideoScript,
+  style: string
+): GeneratedVideoScript {
+  const character =
+    script.characterProfile || extractCharacterProfile(script);
+
+  const scenes = script.scenes.map((scene, index) => {
+    const sceneNumber = scene.sceneNumber || index + 1;
+    const defaults = buildDefaultSceneImageFields(scene, style, character);
+    return {
+      ...scene,
+      id: scene.id || `scn_${projectId.slice(0, 8)}_${sceneNumber}`,
+      sceneNumber,
+      imagePrompt: scene.imagePrompt || defaults.imagePrompt,
+      negativePrompt: scene.negativePrompt || defaults.negativePrompt,
+      image: scene.image || {
+        status: "pending" as const,
+        imagePath: null,
+        imageUrl: null,
+        imagePrompt: scene.imagePrompt || defaults.imagePrompt,
+        negativePrompt: scene.negativePrompt || defaults.negativePrompt,
+        seed: null,
+        width: null,
+        height: null,
+        generationTimeMs: null,
+        error: null,
+      },
+    };
+  });
+
+  return {
+    ...script,
+    characterProfile: character,
+    scenes,
+  };
+}
+
+export function markScenesReady(id: string): VideoDraft | null {
+  const existing = getVideo(id);
+  if (!existing?.generatedScript) return null;
+  const prepared = prepareScriptForScenes(
+    id,
+    existing.generatedScript,
+    existing.settings.videoStyle
+  );
+  const updated: VideoDraft = {
+    ...existing,
+    generatedScript: prepared,
+    status: "scenes_pending",
+    updatedAt: new Date().toISOString(),
+  };
+  return saveVideo(updated);
 }
 
 export function getBranding(): BrandingSettings {
