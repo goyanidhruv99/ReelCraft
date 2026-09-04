@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum VideoStatus {
+  DRAFT
+  SCRIPT_PENDING
+  SCRIPT_READY
+  SCENES_PENDING
+  SCENES_READY
+  RENDERING
+  COMPLETED
+  FAILED
+}
+
+enum AspectRatio {
+  RATIO_9_16
+  RATIO_16_9
+  RATIO_1_1
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  videos   Video[]
+  branding Branding?
+  settings UserSettings?
+}
+
+model Video {
+  id          String      @id @default(cuid())
+  title       String
+  idea        String
+  script      String?
+  status      VideoStatus @default(DRAFT)
+  language    String      @default("hi")
+  videoStyle  String      @default("cinematic")
+  aspectRatio AspectRatio @default(RATIO_9_16)
+  durationSec Int         @default(60)
+  topic       String?
+  mode        String      @default("text-to-video")
+  thumbnailUrl String?
+  outputPath   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  scenes Scene[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Scene {
+  id          String  @id @default(cuid())
+  order       Int
+  narration   String
+  visualPrompt String?
+  imagePath   String?
+  durationSec Int     @default(5)
+
+  videoId String
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([videoId])
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  title       String
+  category    String
+  description String?
+  thumbnailUrl String?
+  promptHint  String?
+  isPopular   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model VoiceProfile {
+  id        String   @id @default(cuid())
+  name      String
+  language  String
+  gender    String
+  style     String?
+  previewPath String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model MusicTrack {
+  id         String   @id @default(cuid())
+  title      String
+  category   String
+  durationSec Int
+  filePath   String?
+  isLicensed Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+model Branding {
+  id                 String  @id @default(cuid())
+  channelName        String?
+  logoPath           String?
+  watermarkEnabled   Boolean @default(false)
+  watermarkPosition  String  @default("bottom-right")
+  instagramHandle    String?
+  youtubeChannelName String?
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserSettings {
+  id               String  @id @default(cuid())
+  defaultLanguage  String  @default("hi")
+  defaultStyle     String  @default("cinematic")
+  defaultAspect    String  @default("9:16")
+  defaultDuration  Int     @default(60)
+  sidebarCollapsed Boolean @default(false)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+:root {
+  --rc-primary: #6c4dff;
+  --rc-violet: #8b5cf6;
+  --rc-pink: #ec4899;
+  --rc-bg: #f5f7ff;
+  --rc-text: #172033;
+  --rc-white: #ffffff;
+  --rc-muted: #5b647a;
+  --rc-border: #e4e7f5;
+  --background: var(--rc-bg);
+  --foreground: var(--rc-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-rc-primary: var(--rc-primary);
+  --color-rc-violet: var(--rc-violet);
+  --color-rc-pink: var(--rc-pink);
+  --color-rc-bg: var(--rc-bg);
+  --color-rc-text: var(--rc-text);
+  --font-sans: var(--font-plus-jakarta);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--rc-bg);
+  color: var(--rc-text);
+  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--rc-primary) 25%, white);
+}
